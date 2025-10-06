@@ -32,9 +32,8 @@ def main():
         engine.update()
         engine.render(SCREEN)
 
-        # 🔸 Check game over after rendering
-        if engine.check_game_over(SCREEN):
-            break
+        # ✅ Check game over (will restart or quit based on player input)
+        engine.check_game_over(SCREEN)
 
         pygame.display.flip()
         clock.tick(FPS)

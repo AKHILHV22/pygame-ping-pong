@@ -6,6 +6,7 @@ from .ball import Ball
 # Game Engine
 
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 class GameEngine:
     def __init__(self, width, height):
@@ -72,21 +73,44 @@ class GameEngine:
 
     # Task 2: Implement Game Over Condition
 
+    # 🧠 Game Over Check
     def check_game_over(self, screen):
-        # If either player reaches 5 points
         if self.player_score >= 5 or self.ai_score >= 5:
             winner_text = "Player Wins!" if self.player_score >= 5 else "AI Wins!"
 
-            # Render the message
-            text_surface = self.font.render(winner_text, True, WHITE)
-            text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2))
-            screen.blit(text_surface, text_rect)
+            game_over_font = pygame.font.SysFont("Arial", 50)
+            small_font = pygame.font.SysFont("Arial", 25)
+
+            winner_surface = game_over_font.render(winner_text, True, WHITE)
+            restart_surface = small_font.render("Press R to Restart or Q to Quit", True, WHITE)
+
+            screen.fill(BLACK)
+            screen.blit(winner_surface, winner_surface.get_rect(center=(self.width // 2, self.height // 2 - 40)))
+            screen.blit(restart_surface, restart_surface.get_rect(center=(self.width // 2, self.height // 2 + 40)))
             pygame.display.flip()
 
-            # Pause for a few seconds to display the result
-            time.sleep(3)
-            pygame.quit()
-            quit()  # Exit program
-
+            # Wait for keypress
+            waiting = True
+            while waiting:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r:
+                            self.reset_game()
+                            waiting = False
+                            return False  # continue the game
+                        elif event.key == pygame.K_q:
+                            pygame.quit()
+                            quit()
             return True
         return False
+
+    # 🔄 Reset Game for Restart
+    def reset_game(self):
+        self.player_score = 0
+        self.ai_score = 0
+        self.ball.reset()
+        self.player.y = self.height // 2 - self.player.height // 2
+        self.ai.y = self.height // 2 - self.ai.height // 2
