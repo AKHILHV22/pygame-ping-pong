@@ -32,7 +32,7 @@ def main():
         engine.update()
         engine.render(SCREEN)
 
-        # ✅ Check game over (will restart or quit based on player input)
+        # ✅ Replay menu will appear here automatically
         engine.check_game_over(SCREEN)
 
         pygame.display.flip()

@@ -22,6 +22,7 @@ class GameEngine:
         self.player_score = 0
         self.ai_score = 0
         self.font = pygame.font.SysFont("Arial", 30)
+        self.winning_score = 5  # Default target
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
@@ -71,25 +72,81 @@ class GameEngine:
         screen.blit(ai_text, (self.width * 3//4, 20))
 
 
-    # Task 2: Implement Game Over Condition
+    # # Task 2: Implement Game Over Condition
 
-    # 🧠 Game Over Check
+    # # 🧠 Game Over Check
+    # def check_game_over(self, screen):
+    #     if self.player_score >= 5 or self.ai_score >= 5:
+    #         winner_text = "Player Wins!" if self.player_score >= 5 else "AI Wins!"
+
+    #         game_over_font = pygame.font.SysFont("Arial", 50)
+    #         small_font = pygame.font.SysFont("Arial", 25)
+
+    #         winner_surface = game_over_font.render(winner_text, True, WHITE)
+    #         restart_surface = small_font.render("Press R to Restart or Q to Quit", True, WHITE)
+
+    #         screen.fill(BLACK)
+    #         screen.blit(winner_surface, winner_surface.get_rect(center=(self.width // 2, self.height // 2 - 40)))
+    #         screen.blit(restart_surface, restart_surface.get_rect(center=(self.width // 2, self.height // 2 + 40)))
+    #         pygame.display.flip()
+
+    #         # Wait for keypress
+    #         waiting = True
+    #         while waiting:
+    #             for event in pygame.event.get():
+    #                 if event.type == pygame.QUIT:
+    #                     pygame.quit()
+    #                     quit()
+    #                 if event.type == pygame.KEYDOWN:
+    #                     if event.key == pygame.K_r:
+    #                         self.reset_game()
+    #                         waiting = False
+    #                         return False  # continue the game
+    #                     elif event.key == pygame.K_q:
+    #                         pygame.quit()
+    #                         quit()
+    #         return True
+    #     return False
+
+    # # 🔄 Reset Game for Restart
+    # def reset_game(self):
+    #     self.player_score = 0
+    #     self.ai_score = 0
+    #     self.ball.reset()
+    #     self.player.y = self.height // 2 - self.player.height // 2
+    #     self.ai.y = self.height // 2 - self.ai.height // 2
+
+
+
+    # Task 3: Add Replay Option
+    # 🧠 Game Over + Replay Menu
     def check_game_over(self, screen):
-        if self.player_score >= 5 or self.ai_score >= 5:
-            winner_text = "Player Wins!" if self.player_score >= 5 else "AI Wins!"
+        if self.player_score >= self.winning_score or self.ai_score >= self.winning_score:
+            winner_text = "Player Wins!" if self.player_score >= self.winning_score else "AI Wins!"
 
-            game_over_font = pygame.font.SysFont("Arial", 50)
+            big_font = pygame.font.SysFont("Arial", 50)
             small_font = pygame.font.SysFont("Arial", 25)
 
-            winner_surface = game_over_font.render(winner_text, True, WHITE)
-            restart_surface = small_font.render("Press R to Restart or Q to Quit", True, WHITE)
-
+            # Display Winner
             screen.fill(BLACK)
-            screen.blit(winner_surface, winner_surface.get_rect(center=(self.width // 2, self.height // 2 - 40)))
-            screen.blit(restart_surface, restart_surface.get_rect(center=(self.width // 2, self.height // 2 + 40)))
+            winner_surface = big_font.render(winner_text, True, WHITE)
+            screen.blit(winner_surface, winner_surface.get_rect(center=(self.width // 2, self.height // 2 - 80)))
+
+            # Display Replay Options
+            options = [
+                "Select Mode:",
+                "[3] Best of 3",
+                "[5] Best of 5",
+                "[7] Best of 7",
+                "[ESC] Exit"
+            ]
+
+            for i, text in enumerate(options):
+                opt_surface = small_font.render(text, True, WHITE)
+                screen.blit(opt_surface, opt_surface.get_rect(center=(self.width // 2, self.height // 2 + i * 35 - 10)))
+
             pygame.display.flip()
 
-            # Wait for keypress
             waiting = True
             while waiting:
                 for event in pygame.event.get():
@@ -97,18 +154,28 @@ class GameEngine:
                         pygame.quit()
                         quit()
                     if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_r:
-                            self.reset_game()
+                        if event.key == pygame.K_3:
+                            self.reset_game(3)
                             waiting = False
-                            return False  # continue the game
-                        elif event.key == pygame.K_q:
+                            return False
+                        elif event.key == pygame.K_5:
+                            self.reset_game(5)
+                            waiting = False
+                            return False
+                        elif event.key == pygame.K_7:
+                            self.reset_game(7)
+                            waiting = False
+                            return False
+                        elif event.key == pygame.K_ESCAPE:
                             pygame.quit()
                             quit()
             return True
         return False
 
-    # 🔄 Reset Game for Restart
-    def reset_game(self):
+    # 🔄 Reset Game for Replay
+    def reset_game(self, winning_score=None):
+        if winning_score:
+            self.winning_score = winning_score
         self.player_score = 0
         self.ai_score = 0
         self.ball.reset()
