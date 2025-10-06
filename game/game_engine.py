@@ -28,17 +28,31 @@ class GameEngine:
         if keys[pygame.K_s]:
             self.player.move(10, self.height)
 
+    
+    # Task 1: Refine Ball Collision
     def update(self):
+        # Move the ball first
         self.ball.move()
-        self.ball.check_collision(self.player, self.ai)
 
+        # Check collision immediately after moving
+        if self.ball.rect().colliderect(self.player.rect()):
+            self.ball.x = self.player.x + self.player.width  # prevent overlap
+            self.ball.velocity_x *= -1
+
+        elif self.ball.rect().colliderect(self.ai.rect()):
+            self.ball.x = self.ai.x - self.ball.width  # prevent overlap
+            self.ball.velocity_x *= -1
+
+        # Check if ball goes out of bounds (scoring)
         if self.ball.x <= 0:
             self.ai_score += 1
             self.ball.reset()
-        elif self.ball.x >= self.width:
+        elif self.ball.x + self.ball.width >= self.width:
             self.player_score += 1
             self.ball.reset()
 
+        # Wall collisions (top/bottom handled in Ball.move())
+        # Update AI paddle movement
         self.ai.auto_track(self.ball, self.height)
 
     def render(self, screen):
