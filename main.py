@@ -32,10 +32,15 @@ def main():
         engine.update()
         engine.render(SCREEN)
 
+        # 🔸 Check game over after rendering
+        if engine.check_game_over(SCREEN):
+            break
+
         pygame.display.flip()
         clock.tick(FPS)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()
